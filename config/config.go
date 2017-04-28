@@ -3,6 +3,8 @@ package config
 import (
 	"os"
 	"strings"
+	"strconv"
+	"fmt"
 )
 
 var requiredParams = []string{
@@ -11,6 +13,8 @@ var requiredParams = []string{
 	"KAPITOL_MONGO_MEMBERS_COLLECTION",
 	"KAPITOL_MONGO_LEGISLATION_COLLECTION",
 	"OCTOPUS_LOG_PATH",
+	"OCTOPUS_LOG_LEVEL",
+	"KAPITOL_PRO_PUBLICA_CONGRESS_API_KEY",
 }
 
 type Mongo struct {
@@ -20,11 +24,19 @@ type Mongo struct {
 	LegislativeCollection string
 }
 
-type LogPath string
+type LogInfo struct {
+	Path string
+	Level int
+}
+
+type ApiKeys struct {
+	ProPublicaCongress string
+}
 
 type Config struct {
 	Mongo Mongo
-	LogPath LogPath
+	LogInfo LogInfo
+	ApiKeys ApiKeys
 }
 
 func Configuration() Config {
@@ -40,6 +52,13 @@ func Configuration() Config {
 		panic("Octopus environment variables not set properly. Missing:\n" + strings.Join(missingEnvVars, "\n"))
 	}
 
+	level, err := strconv.Atoi(os.Getenv("OCTOPUS_LOG_LEVEL"))
+	if err != nil {
+		fmt.Println("Error: get octopus log level:", err)
+		level = 0
+	}
+	li := LogInfo{Path: os.Getenv("OCTOPUS_LOG_PATH"), Level: level}
+
 	m := Mongo{
 		Url: os.Getenv("KAPITOL_MONGO_URL"),
 		Password: os.Getenv("KAPITOL_MONGO_PASSWORD"),
@@ -47,7 +66,7 @@ func Configuration() Config {
 		LegislativeCollection: os.Getenv("KAPITOL_MONGO_LEGISLATION_COLLECTION"),
 	}
 
-	lp := LogPath(os.Getenv("OCTOPUS_LOG_PATH"))
+	api := ApiKeys{ProPublicaCongress: os.Getenv("KAPITOL_PRO_PUBLICA_CONGRESS_API_KEY")}
 
-	return Config{Mongo: m, LogPath: lp}
+	return Config{Mongo: m, LogInfo: li, ApiKeys: api}
 }
