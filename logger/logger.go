@@ -7,20 +7,23 @@ import (
 	"os"
 )
 
-type Logger struct {
+type logger struct {
 	config config.Config
-	TimeFormat string
+	timeFormat string
+	isSetup bool
 }
 
-func (l *Logger)Setup() {
+func (l *logger)setup() {
 	l.config = config.Configuration()
 
-	if l.TimeFormat == "" {
-		l.TimeFormat = time.UnixDate
+	if l.timeFormat == "" {
+		l.timeFormat = time.UnixDate
 	}
+
+	l.isSetup = true
 }
 
-func (l *Logger)Log(a ...interface{}) {
+func (l *logger)log(a ...interface{}) {
 	args := fmt.Sprint(a)
 	msg := time.Now().Format(time.UnixDate) + " :: " + args[1: len(args) - 1]
 	fmt.Println(msg)
@@ -41,4 +44,13 @@ func (l *Logger)Log(a ...interface{}) {
 			}
 		}(msg)
 	}
+}
+
+var l logger;
+func Log(a ...interface{}) {
+	if !l.isSetup {
+		l.setup()
+	}
+
+	l.log(a)
 }

@@ -9,6 +9,7 @@ import (
 
 var requiredParams = []string{
 	"KAPITOL_MONGO_URL",
+	"KAPITOL_MONGO_DB",
 	"KAPITOL_MONGO_PASSWORD",
 	"KAPITOL_MONGO_MEMBERS_COLLECTION",
 	"KAPITOL_MONGO_LEGISLATION_COLLECTION",
@@ -19,6 +20,7 @@ var requiredParams = []string{
 
 type Mongo struct {
 	Url string
+	Db string
 	Password string
 	MembersCollection string
 	LegislativeCollection string
@@ -61,6 +63,7 @@ func Configuration() Config {
 
 	m := Mongo{
 		Url: os.Getenv("KAPITOL_MONGO_URL"),
+		Db: os.Getenv("KAPITOL_MONGO_DB"),
 		Password: os.Getenv("KAPITOL_MONGO_PASSWORD"),
 		MembersCollection: os.Getenv("KAPITOL_MONGO_MEMBERS_COLLECTION"),
 		LegislativeCollection: os.Getenv("KAPITOL_MONGO_LEGISLATION_COLLECTION"),
