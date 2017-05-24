@@ -56,7 +56,7 @@ func Configuration() Config {
 
 	level, err := strconv.Atoi(os.Getenv("OCTOPUS_LOG_LEVEL"))
 	if err != nil {
-		fmt.Println("Error: get octopus log level:", err)
+		fmt.Println("Error: getting octopus log level:", err)
 		level = 0
 	}
 	li := LogInfo{Path: os.Getenv("OCTOPUS_LOG_PATH"), Level: level}

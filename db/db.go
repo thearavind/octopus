@@ -11,16 +11,15 @@ type Db struct {
 	config config.Config
 }
 
-func (db *Db)getSession() (session *mgo.Session) {
+func (db *Db)getCollection(col DbCollection) {
 	session, err := mgo.Dial(config.Config.Mongo.Url)
 	if err != nil {
 		logger.Log("Error: could not connect to mongo db at:", db.config.Mongo.Url)
 		return nil
 	}
 
-	return session
-
 	col := session.DB(db.config.Mongo.Db).C(db.config.Mongo.MembersCollection)
+
 }
 
 func (db *Db)Insert(T OctoModel) error {

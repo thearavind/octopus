@@ -4,8 +4,7 @@ import(
 	"fmt"
 	"net/http"
 	"io/ioutil"
-	"encoding/json"
-	"github.com/greenac/chpt1/models"
+	"github.com/greenac/octopus/logger"
 	"errors"
 )
 
@@ -13,7 +12,7 @@ type Fetcher struct {
 	Url string
 }
 
-func (f *Fetcher) Fetch() (contents []byte, error error) {
+func (f *Fetcher)Fetch() (contents []byte, error error) {
 	resp, err := http.Get(f.Url)
 	if err != nil {
 		fmt.Println("Error: fetching contents from:", f.Url, "error:", err)
@@ -31,27 +30,21 @@ func (f *Fetcher) Fetch() (contents []byte, error error) {
 	return content, nil
 }
 
-func (f *Fetcher) GetUser() (user.User, error) {
-	var u user.User
-	resp, err := http.Get(f.Url)
+func (f *Fetcher)PostJson(body *[]byte) (responseData []byte, err error) {
+	var data []byte
+	resp, err := http.Post(f.Url, "application/json", body)
 	if err != nil {
-		fmt.Println("Error fetching json from:", f.Url, "error:", err)
-		return u, err
+		logger.Log("Error: could not post json to:", f.Url)
+		return data, err
 	}
+
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		fmt.Println("Error fetching json from:", f.Url, "Got status:", resp.StatusCode)
-		resp.Body.Close()
-		return u, errors.New("StatusCodeNotOk")
+		return data, errors.New("StatusCodeNotOk")
 	}
 
-	err = json.NewDecoder(resp.Body).Decode(&u)
-	if err != nil {
-		fmt.Println("Error decoding json from:", f.Url, "error:", err)
-		resp.Body.Close()
-		return u, err
-	}
-
-	resp.Body.Close()
-	return u, nil
+	data, err = ioutil.ReadAll(resp.Body)
+	return data, err
 }
