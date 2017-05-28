@@ -1,7 +1,6 @@
-package fetcher
+package workers
 
 import(
-	"fmt"
 	"net/http"
 	"io/ioutil"
 	"github.com/greenac/octopus/logger"
@@ -15,18 +14,18 @@ type Fetcher struct {
 func (f *Fetcher)Fetch() (contents []byte, error error) {
 	resp, err := http.Get(f.Url)
 	if err != nil {
-		fmt.Println("Error: fetching contents from:", f.Url, "error:", err)
+		logger.Log("Error: fetching contents from:", f.Url, "error:", err)
 		return nil, err
 	}
+
+	defer resp.Body.Close()
 
 	content, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("Error: reading contents from:", f.Url, "error:", err)
-		resp.Body.Close()
+		logger.Log("Error: reading contents from:", f.Url, "error:", err)
 		return nil, err
 	}
 
-	resp.Body.Close()
 	return content, nil
 }
 
@@ -41,7 +40,7 @@ func (f *Fetcher)PostJson(body *[]byte) (responseData []byte, err error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		fmt.Println("Error fetching json from:", f.Url, "Got status:", resp.StatusCode)
+		logger.Log("Error fetching json from:", f.Url, "Got status:", resp.StatusCode)
 		return data, errors.New("StatusCodeNotOk")
 	}
 

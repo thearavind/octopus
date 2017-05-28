@@ -2,13 +2,12 @@ package main
 
 import (
 	"time"
-	"fmt"
 	"github.com/greenac/octopus/logger"
+	//"github.com/greenac/octopus/workers"
 )
 
 func main() {
-	fmt.Println(time.Now().Format(time.UnixDate))
-	logger.Log("whatever i want")
+	logger.Log("Time:", time.Now().Format(time.UnixDate))
 	counter := 1
 	otherCounter := 0
 	for {
