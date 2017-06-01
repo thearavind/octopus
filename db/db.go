@@ -1,8 +1,8 @@
 package db
 
 import (
-	"github.com/greenac/octopus/config"
-	"github.com/greenac/octopus/logger"
+	"github.com/kapitol-app/octopus/config"
+	"github.com/kapitol-app/octopus/logger"
 	"gopkg.in/mgo.v2"
 )
 

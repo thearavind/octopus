@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/greenac/octopus/logger"
-	"github.com/greenac/octopus/workers"
+	"github.com/kapitol-app/octopus/logger"
+	"github.com/kapitol-app/octopus/workers"
 	"encoding/json"
-	"github.com/greenac/octopus/models"
+	"github.com/kapitol-app/octopus/models"
 )
 
 func main() {

@@ -3,7 +3,7 @@ package workers
 import(
 	"net/http"
 	"io/ioutil"
-	"github.com/greenac/octopus/logger"
+	"github.com/kapitol-app/octopus/logger"
 	//"errors"
 )
 
