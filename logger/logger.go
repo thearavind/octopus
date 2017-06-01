@@ -1,8 +1,8 @@
 package logger
 
 import (
-	"github.com/greenac/gologger"
-	"github.com/greenac/octopus/config"
+	"github.com/kapitol-app/gologger"
+	"github.com/kapitol-app/octopus/config"
 )
 
 

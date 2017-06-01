@@ -1,6 +1,6 @@
 package db
 
-import "github.com/greenac/octopus/config"
+import "github.com/kapitol-app/octopus/config"
 
 
 type DbCollection string
