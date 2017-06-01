@@ -1,7 +1,7 @@
 package models
 
 type Senator struct {
-	Member
+	*Member
 	SenateClass string `json:"senate_class"`
 	MissedVotesPct float64 `json:"missed_votes_pct"`
 	VotesWithPartyPct float64 `json:"votes_with_party_pct"`
