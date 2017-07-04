@@ -5,13 +5,12 @@ import (
 	"github.com/kapitol-app/octopus/config"
 )
 
-
 var goLogger *gologger.GoLogger
 
+//Log - Global logger function
 func Log(a ...interface{}) {
 	if goLogger == nil {
-		c := config.Configuration()
-		goLogger = &gologger.GoLogger{LogLevel: c.LogInfo.Level, LogPath: c.LogInfo.Path}
+		goLogger = &gologger.GoLogger{LogLevel: config.C.LogInfo.Level, LogPath: config.C.LogInfo.Path}
 		(*goLogger).Setup()
 	}
 
