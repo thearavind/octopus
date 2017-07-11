@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-
 	"github.com/kapitol-app/octopus/config"
 	"github.com/kapitol-app/octopus/logger"
 )
@@ -15,9 +14,7 @@ const base = "https://api.propublica.org/congress/v1/"
 type Chamber string
 
 const (
-	//House - House of representatives
 	House Chamber = "house"
-	//Senate - Senate
 	Senate Chamber = "senate"
 )
 
@@ -47,5 +44,6 @@ func Fetch(congress int, chamber Chamber, ty Type, end string, response interfac
 		logger.Log("Error: reading contents error:", err)
 		return err
 	}
+
 	return nil
 }

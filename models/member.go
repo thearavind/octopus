@@ -1,6 +1,6 @@
 package models
 
-//Member - House members model
+//Member - members model
 type Member struct {
 	APIURI          string `json:"api_uri" bson:"apiUri"`
 	District        string `json:"district" bson:"district"`
