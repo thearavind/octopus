@@ -1,48 +1,51 @@
 package workers
 
-import(
+import (
+	"encoding/json"
+	"fmt"
 	"net/http"
-	"io/ioutil"
+
+	"github.com/kapitol-app/octopus/config"
 	"github.com/kapitol-app/octopus/logger"
-	//"errors"
 )
 
-type Fetcher struct {
-	Url string
-}
+const base = "https://api.propublica.org/congress/v1/"
 
-func (f *Fetcher)Fetch() (contents []byte, error error) {
-	resp, err := http.Get(f.Url)
+//Chamber - Chamber of the congress
+type Chamber string
+
+const (
+	//House - House of representatives
+	House Chamber = "house"
+	//Senate - Senate
+	Senate Chamber = "senate"
+)
+
+//Type - Type of the api query
+type Type string
+
+const (
+	//Member - member type
+	Member Type = "members"
+)
+
+//Fetch - Fetches the data from the propublica api
+func Fetch(congress int, chamber Chamber, ty Type, end string, response interface{}) error {
+	query := fmt.Sprintf("%s%d/%s/%s%s", base, congress, chamber, ty, end)
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", query, nil)
+	req.Header.Add("X-API-Key", config.C.ApiKeys.ProPublicaCongress)
+	resp, err := client.Do(req)
 	if err != nil {
-		logger.Log("Error: fetching contents from:", f.Url, "error:", err)
-		return nil, err
+		logger.Log("Error fetching contents from", query, "error:", err)
+		return err
 	}
 
 	defer resp.Body.Close()
-	content, err := ioutil.ReadAll(resp.Body)
+	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
-		logger.Log("Error: reading contents from:", f.Url, "error:", err)
-		return nil, err
+		logger.Log("Error: reading contents error:", err)
+		return err
 	}
-
-	return content, nil
+	return nil
 }
-
-//func (f *Fetcher)PostJson(body *[]byte) (responseData []byte, err error) {
-//	var data []byte
-//	resp, err := http.Post(f.Url, "application/json", body)
-//	if err != nil {
-//		logger.Log("Error: could not post json to:", f.Url)
-//		return data, err
-//	}
-//
-//	defer resp.Body.Close()
-//
-//	if resp.StatusCode != http.StatusOK {
-//		logger.Log("Error fetching json from:", f.Url, "Got status:", resp.StatusCode)
-//		return data, errors.New("StatusCodeNotOk")
-//	}
-//
-//	data, err = ioutil.ReadAll(resp.Body)
-//	return data, err
-//}

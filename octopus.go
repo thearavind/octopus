@@ -1,49 +1,45 @@
 package main
 
 import (
+	"github.com/kapitol-app/octopus/db"
 	"github.com/kapitol-app/octopus/logger"
-	"github.com/kapitol-app/octopus/workers"
-	"encoding/json"
 	"github.com/kapitol-app/octopus/models"
+	"github.com/kapitol-app/octopus/workers"
 )
 
 func main() {
-	const url = "http://localhost:7979/dummy-data/get-senators"
-	f := workers.Fetcher{Url: url}
-	data, err := f.Fetch()
+	senators := models.MemberListResponse{}
+	err := workers.Fetch(115, workers.Senate, workers.Member, ".json", &senators)
 	if err != nil {
-		logger.Log("Failed to fetch data from:", url, "Error:", err)
-		return
+		logger.Log("Failed to fetch senators data", "Error: ", err)
+	} else {
+		logger.Log("Fetched the senators data", senators, ",saving it to the DB")
+
+		for i, senatorsLength := 0, senators.Results[0].NumResults; i < senatorsLength; i++ {
+			err = db.Connection.SenatorCollection.Insert(&senators.Results[0].Members[i])
+			if err != nil {
+				logger.Log("Failed to insert the senator", senators.Results[0].Members[i], "into the DB")
+				break
+			}
+		}
+		logger.Log("Saved the senators data to the DB")
 	}
 
-	logger.Log("Fetch number of bytes from:", url, "Data:", len(data))
-
-	var resp map[string]interface{}
-	err = json.Unmarshal(data, &resp)
+	house := models.MemberListResponse{}
+	err = workers.Fetch(115, workers.House, workers.Member, ".json", &house)
 	if err != nil {
-		logger.Log("Failed to decode json with error:", err)
-		return
-	}
+		logger.Log("Failed to fetch house members data", "Error: ", err)
+	} else {
+		logger.Log("Fetched the house members data", house, ",saving it to the DB")
 
-	payload, has := resp["payload"]
-	if !has {
-		logger.Log("There is no `payload` value in response")
-		return
+		houseLength := house.Results[0].NumResults
+		for i := 0; i < houseLength; i++ {
+			err = db.Connection.MemberCollection.Insert(&house.Results[0].Members[i])
+			if err != nil {
+				logger.Log("Failed to insert the house member", house.Results[0].Members[i], "into the DB")
+				break
+			}
+		}
+		logger.Log("Saved the house members data to the DB")
 	}
-
-	logger.Log("Payload:", payload)
-	payloadJson, err := json.Marshal(payload)
-	if err != nil {
-		logger.Log("Could not encode payload as json:", err)
-		return
-	}
-
-	var sens []models.Senator
-	err = json.Unmarshal(payloadJson, &sens)
-	if err != nil {
-		logger.Log("Could not decode senators", err)
-		return
-	}
-
-	logger.Log("Senators:", sens)
 }
