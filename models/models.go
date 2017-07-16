@@ -12,7 +12,7 @@ type MemberListResponse struct {
 			CspanID           string  `json:"cspan_id" bson:"-"`
 			District          string  `json:"district" bson:"district,omitempty"`
 			Domain            string  `json:"domain" bson:"-"`
-			DwNominate        float32 `json:"dw_nominate" bson:"-"`
+			DwNominate        float64 `json:"dw_nominate" bson:"-"`
 			FacebookAccount   string  `json:"facebook_account" bson:"facebookAccount"`
 			FirstName         string  `json:"first_name" bson:"firstName"`
 			Geoid             string  `json:"geoid" bson:"geoId,omitempty"`
@@ -21,7 +21,7 @@ type MemberListResponse struct {
 			IcpsrID           string  `json:"icpsr_id" bson:"-"`
 			ID                string  `json:"id" bson:"ppId"`
 			IdealPoint        string  `json:"ideal_point" bson:"-"`
-			InOffice          string  `json:"in_office" bson:"inOffice"`
+			InOffice          string  `json:"in_office,string" bson:"inOffice"`
 			LastName          string  `json:"last_name" bson:"lastName"`
 			LeadershipRole    string  `json:"leadership_role" bson:"leadershipRole"`
 			LisID             string  `json:"lis_id" bson:"lisId,omitempty"`
@@ -42,7 +42,7 @@ type MemberListResponse struct {
 			TotalVotes        int     `json:"total_votes" bson:"totalVotes"`
 			TwitterAccount    string  `json:"twitter_account" bson:"twitterAccount"`
 			URL               string  `json:"url" bson:"url"`
-			VotesWithPartyPct float32 `json:"votes_with_party_pct" bson:"-"`
+			VotesWithPartyPct float64 `json:"votes_with_party_pct" bson:"-"`
 			VotesmartID       string  `json:"votesmart_id" bson:"-"`
 		} `json:"members"`
 		NumResults int `json:"num_results" bson:"-"`

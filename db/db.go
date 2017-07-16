@@ -4,7 +4,6 @@ import (
 	"github.com/kapitol-app/octopus/config"
 	"github.com/kapitol-app/octopus/logger"
 	"gopkg.in/mgo.v2"
-	"strings"
 )
 
 type connections struct {
