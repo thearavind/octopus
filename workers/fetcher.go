@@ -3,9 +3,9 @@ package workers
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"github.com/kapitol-app/octopus/config"
 	"github.com/kapitol-app/octopus/logger"
+	"net/http"
 )
 
 const base = "https://api.propublica.org/congress/v1/"
@@ -14,7 +14,7 @@ const base = "https://api.propublica.org/congress/v1/"
 type Chamber string
 
 const (
-	House Chamber = "house"
+	House  Chamber = "house"
 	Senate Chamber = "senate"
 )
 

@@ -31,7 +31,7 @@ type Mongo struct {
 
 //LogInfo - Config strings related to the logger
 type LogInfo struct {
-	Path string
+	Path  string
 	Level int
 }
 
@@ -42,7 +42,7 @@ type ApiKeys struct {
 
 //Config - Octopus config
 type Config struct {
-	Mongo Mongo
+	Mongo   Mongo
 	LogInfo LogInfo
 	ApiKeys ApiKeys
 }
