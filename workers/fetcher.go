@@ -4,11 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/kapitol-app/octopus/config"
+	"github.com/kapitol-app/octopus/endpoints"
 	"github.com/kapitol-app/octopus/logger"
 	"net/http"
 )
-
-const base = "https://api.propublica.org/congress/v1/"
 
 //Chamber - Chamber of the congress
 type Chamber string
@@ -19,27 +18,51 @@ const (
 )
 
 //Type - Type of the api query
-type Type string
+type FetchType string
 
 const (
 	//Member - member type
-	Member Type = "members"
+	Members FetchType = "members"
 )
 
 //Fetch - Fetches the data from the propublica api
-func Fetch(congress int, chamber Chamber, ty Type, end string, response interface{}) error {
-	query := fmt.Sprintf("%s%d/%s/%s%s", base, congress, chamber, ty, end)
+func PropublicaMembersFetch(
+	congress int,
+	chamber Chamber,
+	response interface{},
+) error {
+	url := fmt.Sprintf(
+		"%s%d/%s/%s",
+		endpoints.GetEndpoint(endpoints.Propublica),
+		congress,
+		chamber,
+		"members.json",
+	)
+
+	return fetch(url, response)
+}
+
+func PropublicaMemberFetch(
+	memberUrl string,
+	response interface{},
+) error {
+
+	return fetch(memberUrl, response)
+}
+
+func fetch(url string, response interface{}) error {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", query, nil)
+	req, err := http.NewRequest("GET", url, nil)
 	req.Header.Add("X-API-Key", config.C.ApiKeys.ProPublicaCongress)
 	resp, err := client.Do(req)
 	if err != nil {
-		logger.Log("Error fetching contents from", query, "error:", err)
+		logger.Log("Error fetching contents from", url, "error:", err)
 		return err
 	}
 
 	defer resp.Body.Close()
 	err = json.NewDecoder(resp.Body).Decode(&response)
+
 	if err != nil {
 		logger.Log("Error: reading contents error:", err)
 		return err

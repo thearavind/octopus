@@ -1,45 +1,35 @@
 package main
 
 import (
-	"github.com/kapitol-app/octopus/db"
+	"fmt"
+	"github.com/kapitol-app/octopus/fetch_controllers"
 	"github.com/kapitol-app/octopus/logger"
-	"github.com/kapitol-app/octopus/models"
-	"github.com/kapitol-app/octopus/workers"
 )
 
 func main() {
-	senators := models.MemberListResponse{}
-	err := workers.Fetch(115, workers.Senate, workers.Member, ".json", &senators)
+	sfc := fetch_controllers.SenatorFetchController{}
+	urls, err := sfc.InitialFetch()
 	if err != nil {
-		logger.Log("Failed to fetch senators data", "Error: ", err)
-	} else {
-		logger.Log("Fetched the senators data", senators, ",saving it to the DB")
-
-		for i, senatorsLength := 0, senators.Results[0].NumResults; i < senatorsLength; i++ {
-			err = db.Connection.SenatorCollection.Insert(&senators.Results[0].Members[i])
-			if err != nil {
-				logger.Log("Failed to insert the senator", senators.Results[0].Members[i], "into the DB")
-				break
-			}
-		}
-		logger.Log("Saved the senators data to the DB")
+		logger.Log("Error: Failed to fetch urls from propublica with error:", err)
+		return
 	}
 
-	house := models.MemberListResponse{}
-	err = workers.Fetch(115, workers.House, workers.Member, ".json", &house)
+	url := (*urls)[0]
+	sens, err := sfc.FetchSenator(url)
 	if err != nil {
-		logger.Log("Failed to fetch house members data", "Error: ", err)
-	} else {
-		logger.Log("Fetched the house members data", house, ",saving it to the DB")
+		logger.Log("Failed to fetch senator:", url, "error:", err)
+		return
+	}
 
-		houseLength := house.Results[0].NumResults
-		for i := 0; i < houseLength; i++ {
-			err = db.Connection.MemberCollection.Insert(&house.Results[0].Members[i])
-			if err != nil {
-				logger.Log("Failed to insert the house member", house.Results[0].Members[i], "into the DB")
-				break
+	for _, s := range *sens {
+		fmt.Println("senator:", s.FullName())
+		fmt.Println("roles:")
+		for _, r := range *s.Roles {
+			fmt.Println(r.Title)
+			fmt.Println("committees:")
+			for _, c := range *r.Committees {
+				fmt.Println(c.Name)
 			}
 		}
-		logger.Log("Saved the house members data to the DB")
 	}
 }

@@ -17,6 +17,7 @@ var requiredParams = []string{
 	"OCTOPUS_LOG_PATH",
 	"OCTOPUS_LOG_LEVEL",
 	"KAPITOL_PRO_PUBLICA_CONGRESS_API_KEY",
+	"KAPITOL_PRO_PUBLICA_API_URL",
 }
 
 //Mongo - Config strings related to the mongo db
@@ -40,11 +41,16 @@ type ApiKeys struct {
 	ProPublicaCongress string
 }
 
+type ApiUrls struct {
+	Propublica string
+}
+
 //Config - Octopus config
 type Config struct {
 	Mongo   Mongo
 	LogInfo LogInfo
 	ApiKeys ApiKeys
+	ApiUrls ApiUrls
 }
 
 //C - Global config variable
@@ -80,5 +86,6 @@ func init() {
 		},
 		LogInfo: LogInfo{Path: os.Getenv("OCTOPUS_LOG_PATH"), Level: level},
 		ApiKeys: ApiKeys{ProPublicaCongress: os.Getenv("KAPITOL_PRO_PUBLICA_CONGRESS_API_KEY")},
+		ApiUrls: ApiUrls{Propublica: os.Getenv("KAPITOL_PRO_PUBLICA_API_URL")},
 	}
 }
