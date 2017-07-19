@@ -25,12 +25,3 @@ type Role struct {
 	VotesWithPartyPct float64 `json:"votes_with_party_pct" bson:"votesWithPartyPct"`
 	Committees        *[]Committee
 }
-
-func (r *Role) CommitteeNames() *[]string {
-	names := make([]string, len(*(r.Committees)))
-	for _, c := range *r.Committees {
-		names = append(names, c.Name)
-	}
-
-	return &names
-}

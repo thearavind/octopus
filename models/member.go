@@ -29,12 +29,3 @@ type Member struct {
 func (m *Member) FullName() string {
 	return m.FirstName + " " + m.LastName
 }
-
-func (m *Member) RoleNames() *[]string {
-	names := make([]string, len(*(m.Roles)))
-	for _, r := range *(m.Roles) {
-		names = append(names, r.Title)
-	}
-
-	return &names
-}
