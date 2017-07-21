@@ -11,7 +11,7 @@ var requiredParams = []string{
 	"KAPITOL_MONGO_URL",
 	"KAPITOL_MONGO_DB",
 	"KAPITOL_MONGO_PASSWORD",
-	"KAPITOL_MONGO_MEMBERS_COLLECTION",
+	"KAPITOL_MONGO_HOUSE_COLLECTION",
 	"KAPITOL_MONGO_SENATORS_COLLECTION",
 	"KAPITOL_MONGO_LEGISLATION_COLLECTION",
 	"OCTOPUS_LOG_PATH",
@@ -25,7 +25,7 @@ type Mongo struct {
 	Url                   string
 	Db                    string
 	Password              string
-	MembersCollection     string
+	HouseCollection       string
 	SenatorsCollection    string
 	LegislativeCollection string
 }
@@ -80,7 +80,7 @@ func init() {
 			Url:                   os.Getenv("KAPITOL_MONGO_URL"),
 			Db:                    os.Getenv("KAPITOL_MONGO_DB"),
 			Password:              os.Getenv("KAPITOL_MONGO_PASSWORD"),
-			MembersCollection:     os.Getenv("KAPITOL_MONGO_MEMBERS_COLLECTION"),
+			HouseCollection:       os.Getenv("KAPITOL_MONGO_HOUSE_COLLECTION"),
 			SenatorsCollection:    os.Getenv("KAPITOL_MONGO_SENATORS_COLLECTION"),
 			LegislativeCollection: os.Getenv("KAPITOL_MONGO_LEGISLATION_COLLECTION"),
 		},

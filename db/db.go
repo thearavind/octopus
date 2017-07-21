@@ -48,7 +48,7 @@ func initialize() {
 		logger.Log("Initializing Mongo database")
 		db = &database{
 			Session:           session,
-			HouseCollection:   session.DB(config.C.Mongo.Db).C(config.C.Mongo.MembersCollection),
+			HouseCollection:   session.DB(config.C.Mongo.Db).C(config.C.Mongo.HouseCollection),
 			SenatorCollection: session.DB(config.C.Mongo.Db).C(config.C.Mongo.SenatorsCollection),
 		}
 	}
