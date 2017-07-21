@@ -10,6 +10,8 @@ type Role struct {
 	FecCandidateId    string  `json:"fec_candidate_id" bson:"fecCandidateId"`
 	Seniority         int     `json:"seniority,string" bson:"seniority"`
 	SenateClass       int     `json:"senate_class,string" bson:"senateClass"`
+	District          int     `json:"district,string" bson:"district"`
+	AtLarge           bool    `json:"at_large" bson:"atLarge"`
 	StateRank         string  `json:"state_rank" bson:"stateRank"`
 	LisId             string  `json:"lis_id" bson:"lisId"`
 	OcdId             string  `json:"ocd_id" bson:"ocdId"`

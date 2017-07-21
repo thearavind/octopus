@@ -6,12 +6,11 @@ import (
 )
 
 func main() {
-	sfc := fetch_controllers.SenatorFetchController{}
-	senators, err := sfc.FetchAllSenators()
-	if err != nil {
-		logger.Error("Failed to fetch all senators")
-		return
+	mfc := fetch_controllers.MemberFetchController{}
+	err := mfc.FetchAndSaveSenatorsAndRepresentatives(115)
+	if err == nil {
+		logger.Log("Successfully fetched and saved senators and representatives")
+	} else {
+		logger.Error("Failed to fetch and save senators and representatives")
 	}
-
-	logger.Log("Fetched:", len(*senators), "senators")
 }

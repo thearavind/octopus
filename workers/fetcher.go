@@ -10,28 +10,20 @@ import (
 )
 
 //Chamber - Chamber of the congress
-type Chamber string
-
-const (
-	House  Chamber = "house"
-	Senate Chamber = "senate"
-)
-
-//Type - Type of the api query
 type FetchType string
 
 const (
-	//Member - member type
-	Members FetchType = "members"
+	HouseFetch  FetchType = "house"
+	SenateFetch FetchType = "senate"
 )
 
 //Fetch - Fetches the data from the propublica api
-func PropublicaMembersFetch(congress int, chamber Chamber, response interface{}, ) error {
+func PropublicaMembersFetch(congress int, ft FetchType, response interface{}) error {
 	url := fmt.Sprintf(
 		"%s%d/%s/%s",
 		endpoints.GetEndpoint(endpoints.Propublica),
 		congress,
-		chamber,
+		ft,
 		"members.json",
 	)
 

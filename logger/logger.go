@@ -7,7 +7,6 @@ import (
 
 var goLogger *gologger.GoLogger
 
-//Log - Global logger function
 func setup() {
 	if goLogger == nil {
 		goLogger = &gologger.GoLogger{LogLevel: config.C.LogInfo.Level, LogPath: config.C.LogInfo.Path}
@@ -23,4 +22,9 @@ func Log(a ...interface{}) {
 func Error(a ...interface{}) {
 	setup()
 	goLogger.Error(a)
+}
+
+func Warn(a ...interface{}) {
+	setup()
+	goLogger.Warn(a)
 }
