@@ -20,6 +20,7 @@ type Member struct {
 	CrpId           string  `json:"crp_id" bson:"crpId"`
 	GoogleEntityId  string  `json:"google_entity_id" bson:"googlEntityId"`
 	RssUrl          string  `json:"rss_url" bson:"rssUrl"`
+	Domain          string  `json:"domain" bson:"domain"`
 	InOffice        bool    `json:"in_office" bson:"inOffice"`
 	CurrentParty    string  `json:"current_party" bson:"currentParty"`
 	MostRecentVote  string  `json:"most_recent_vote" bson:"mostRecentVote"`

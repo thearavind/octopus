@@ -5,6 +5,6 @@ import (
 )
 
 func main() {
-	sfc := fetch_controllers.SenatorFetchController{}
-	sfc.FetchAndSaveSenators()
+	mfc := fetch_controllers.MemberFetchController{}
+	mfc.FetchAndSaveSenatorsAndRepresentatives(115)
 }
