@@ -8,11 +8,19 @@ import (
 var goLogger *gologger.GoLogger
 
 //Log - Global logger function
-func Log(a ...interface{}) {
+func setup() {
 	if goLogger == nil {
 		goLogger = &gologger.GoLogger{LogLevel: config.C.LogInfo.Level, LogPath: config.C.LogInfo.Path}
 		(*goLogger).Setup()
 	}
+}
 
+func Log(a ...interface{}) {
+	setup()
 	goLogger.Log(a)
+}
+
+func Error(a ...interface{}) {
+	setup()
+	goLogger.Error(a)
 }
