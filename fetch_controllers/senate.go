@@ -15,12 +15,12 @@ type initialFetchResult struct {
 }
 
 type senatorFetchResult struct {
-	Senators []models.Member `json:"results"`
+	Senators []models.Senator `json:"results"`
 }
 
 type SenatorFetchController struct{}
 
-func (sfc *SenatorFetchController) InitialFetch() (apiUrls *[]string, error error) {
+func (sfc *SenatorFetchController)InitialFetch() (apiUrls *[]string, error error) {
 	var ifr initialFetchResult
 	err := workers.PropublicaMembersFetch(115, workers.Senate, &ifr)
 	if err != nil {
@@ -38,7 +38,7 @@ func (sfc *SenatorFetchController) InitialFetch() (apiUrls *[]string, error erro
 	return &urls, nil
 }
 
-func (sfc *SenatorFetchController) FetchSenator(url string) (*[]models.Member, error) {
+func (sfc *SenatorFetchController)FetchSenator(url string) (*[]models.Senator, error) {
 	var sfr senatorFetchResult
 	err := workers.PropublicaMemberFetch(url, &sfr)
 	if err != nil {
@@ -47,4 +47,28 @@ func (sfc *SenatorFetchController) FetchSenator(url string) (*[]models.Member, e
 	}
 
 	return &(sfr.Senators), nil
+}
+
+func (sfc *SenatorFetchController)FetchAllSenators() (*[]models.Senator, error) {
+	urls, err := sfc.InitialFetch()
+	if err != nil {
+		logger.Error("Error: Failed to fetch urls from propublica with error:", err)
+		return nil, err
+	}
+
+	senators := make([]models.Senator, 0, len(*urls))
+	for _, url := range *urls {
+		sens, err := sfc.FetchSenator(url)
+		if err != nil {
+			logger.Error("Failed to fetch senator:", url, "error:", err)
+			return nil, err
+		}
+
+		for _, s := range *sens {
+			senators = append(senators, s)
+			logger.Log("Fetched:", s.FullName())
+		}
+	}
+
+	return &senators, nil
 }
