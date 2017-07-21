@@ -1,6 +1,5 @@
 package models
 
-
 // TODO: When we finish the House model, both the Senator Model and
 // HouseMember Model should Inherit from the Member model. At that
 // time we should move any like functions and field into the base model.

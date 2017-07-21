@@ -26,7 +26,7 @@ const (
 )
 
 //Fetch - Fetches the data from the propublica api
-func PropublicaMembersFetch(congress int, chamber Chamber, response interface{}, ) error {
+func PropublicaMembersFetch(congress int, chamber Chamber, response interface{}) error {
 	url := fmt.Sprintf(
 		"%s%d/%s/%s",
 		endpoints.GetEndpoint(endpoints.Propublica),
