@@ -1,14 +1,14 @@
-package fetch_controllers
+package fetchControllers
 
 import (
 	"errors"
 	"github.com/kapitol-app/octopus/db"
+	"github.com/kapitol-app/octopus/fetchers"
 	"github.com/kapitol-app/octopus/logger"
 	"github.com/kapitol-app/octopus/models"
-	"github.com/kapitol-app/octopus/workers"
 )
 
-type initialFetchResult struct {
+type initialMemberFetchResult struct {
 	Results []struct {
 		Members []struct {
 			ApiUri string `json:"api_uri"`
@@ -25,9 +25,9 @@ type MemberFetchController struct {
 	Representatives *[]models.Member
 }
 
-func (mfc *MemberFetchController) InitialFetch(ft workers.FetchType, congress int) (apiUrls *[]string, error error) {
-	var ifr initialFetchResult
-	err := workers.PropublicaMembersFetch(congress, ft, &ifr)
+func (mfc *MemberFetchController) InitialFetch(ch fetchers.Chamber, congress int) (apiUrls *[]string, error error) {
+	var ifr initialMemberFetchResult
+	err := fetchers.PropublicaMembersFetch(congress, ch, &ifr)
 	if err != nil {
 		logger.Log("Failed to to fetch all senate members with error:", err)
 		return nil, err
@@ -40,12 +40,13 @@ func (mfc *MemberFetchController) InitialFetch(ft workers.FetchType, congress in
 		}
 	}
 
+	logger.Log("Retrieved:", len(urls), "urls for members of the", ch)
 	return &urls, nil
 }
 
 func (mfc *MemberFetchController) FetchMember(url string) (*[]models.Member, error) {
 	var mfr memberFetchResult
-	err := workers.PropublicaMemberFetch(url, &mfr)
+	err := fetchers.PropublicaMemberFetch(url, &mfr)
 	if err != nil {
 		logger.Log("Failed to to fetch all senate members with error:", err)
 		return nil, err
@@ -65,8 +66,8 @@ func (mfc *MemberFetchController) SaveMember(mem *models.Member, ct db.Collectio
 	return nil
 }
 
-func (mfc *MemberFetchController) FetchAllMembers(ft workers.FetchType, congress int) error {
-	urls, err := mfc.InitialFetch(ft, congress)
+func (mfc *MemberFetchController) FetchAllMembers(ch fetchers.Chamber, congress int) error {
+	urls, err := mfc.InitialFetch(ch, congress)
 	if err != nil {
 		logger.Error("Error: Failed to fetch member urls from propublica with error:", err)
 		return err
@@ -76,44 +77,44 @@ func (mfc *MemberFetchController) FetchAllMembers(ft workers.FetchType, congress
 	for _, url := range *urls {
 		mems, err := mfc.FetchMember(url)
 		if err != nil {
-			logger.Warn("Failed to fetch from", ft, "at url:", url, "error:", err)
+			logger.Warn("Failed to fetch from", ch, "at url:", url, "error:", err)
 			continue
 		}
 
 		for _, m := range *mems {
 			members = append(members, m)
-			logger.Log("Fetched:", m.FullName(), "from", ft, "for congress:", congress)
+			logger.Log("Fetched:", m.FullName(), "from", ch, "for congress:", congress)
 		}
 	}
 
-	switch ft {
-	case workers.HouseFetch:
+	switch ch {
+	case fetchers.House:
 		mfc.Representatives = &members
-	case workers.SenateFetch:
+	case fetchers.Senate:
 		mfc.Senators = &members
 	}
 
 	return nil
 }
 
-func (mfc *MemberFetchController) SaveAllMembers(ft workers.FetchType) error {
-	if ft == workers.HouseFetch && mfc.Representatives == nil {
+func (mfc *MemberFetchController) SaveAllMembers(ch fetchers.Chamber) error {
+	if ch == fetchers.House && mfc.Representatives == nil {
 		logger.Error("Can't save representatives. No representatives have been saved to the member fetch controller.")
 		return errors.New("No Representatives To Save")
 	}
 
-	if ft == workers.SenateFetch && mfc.Senators == nil {
+	if ch == fetchers.Senate && mfc.Senators == nil {
 		logger.Error("Can't save senators. No senators have been saved to the member fetch controller.")
 		return errors.New("No Senators To Save")
 	}
 
 	var ct db.CollectionType
 	var members *[]models.Member
-	switch ft {
-	case workers.HouseFetch:
+	switch ch {
+	case fetchers.House:
 		members = mfc.Representatives
 		ct = db.HouseCollection
-	case workers.SenateFetch:
+	case fetchers.Senate:
 		members = mfc.Senators
 		ct = db.SenateCollection
 	}
@@ -121,7 +122,7 @@ func (mfc *MemberFetchController) SaveAllMembers(ft workers.FetchType) error {
 	if len(*members) == 0 {
 		logger.Warn(
 			"Can't Save member for:",
-			ft,
+			ch,
 			"No member of that type have been saved to the member fetch controller.",
 		)
 		return nil
@@ -130,21 +131,21 @@ func (mfc *MemberFetchController) SaveAllMembers(ft workers.FetchType) error {
 	for _, mem := range *members {
 		err := mfc.SaveMember(&mem, ct)
 		if err != nil {
-			logger.Warn("Failed to save member:", mem.FullName(), "to:", ft)
+			logger.Warn("Failed to save member:", mem.FullName(), "to:", ch)
 		}
 	}
 
 	return nil
 }
 
-func (mfc *MemberFetchController) FetchAndSaveMembers(ft workers.FetchType, congress int) error {
-	err := mfc.FetchAllMembers(ft, congress)
+func (mfc *MemberFetchController) FetchAndSaveMembers(ch fetchers.Chamber, congress int) error {
+	err := mfc.FetchAllMembers(ch, congress)
 	if err != nil {
 		logger.Error("Failed to fetch and save members with fetch error:", err)
 		return err
 	}
 
-	err = mfc.SaveAllMembers(ft)
+	err = mfc.SaveAllMembers(ch)
 	if err != nil {
 		logger.Error("Failed to fetch and save members with save error:", err)
 		return err
@@ -154,11 +155,11 @@ func (mfc *MemberFetchController) FetchAndSaveMembers(ft workers.FetchType, cong
 }
 
 func (mfc *MemberFetchController) FetchAndSaveSenators(congress int) error {
-	return mfc.FetchAndSaveMembers(workers.SenateFetch, congress)
+	return mfc.FetchAndSaveMembers(fetchers.Senate, congress)
 }
 
 func (mfc *MemberFetchController) FetchAndSaveRepresentatives(congress int) error {
-	return mfc.FetchAndSaveMembers(workers.HouseFetch, congress)
+	return mfc.FetchAndSaveMembers(fetchers.House, congress)
 }
 
 func (mfc *MemberFetchController) FetchAndSaveSenatorsAndRepresentatives(congress int) error {

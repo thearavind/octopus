@@ -8,31 +8,19 @@ import (
 )
 
 type database struct {
-	Session           *mgo.Session
-	HouseCollection   *mgo.Collection
-	SenatorCollection *mgo.Collection
+	Session               *mgo.Session
+	HouseCollection       *mgo.Collection
+	SenatorCollection     *mgo.Collection
+	LegislativeCollection *mgo.Collection
 }
 
 type CollectionType string
 
 const (
-	SenateCollection CollectionType = "senate"
-	HouseCollection  CollectionType = "house"
+	SenateCollection      CollectionType = "senate"
+	HouseCollection       CollectionType = "house"
+	LegislativeCollection CollectionType = "legislation"
 )
-
-func collectionForType(ct CollectionType) (*mgo.Collection, error) {
-	var c *mgo.Collection
-	switch ct {
-	case SenateCollection:
-		c = db.SenatorCollection
-	case HouseCollection:
-		c = db.HouseCollection
-	default:
-		return nil, errors.New("Collection Type Unknown")
-	}
-
-	return c, nil
-}
 
 //Connection - Global variable of the mongo db session struct
 var db *database = nil
@@ -47,11 +35,28 @@ func initialize() {
 
 		logger.Log("Initializing Mongo database")
 		db = &database{
-			Session:           session,
-			HouseCollection:   session.DB(config.C.Mongo.Db).C(config.C.Mongo.HouseCollection),
-			SenatorCollection: session.DB(config.C.Mongo.Db).C(config.C.Mongo.SenatorsCollection),
+			Session:               session,
+			HouseCollection:       session.DB(config.C.Mongo.Db).C(config.C.Mongo.HouseCollection),
+			SenatorCollection:     session.DB(config.C.Mongo.Db).C(config.C.Mongo.SenatorsCollection),
+			LegislativeCollection: session.DB(config.C.Mongo.Db).C(config.C.Mongo.LegislativeCollection),
 		}
 	}
+}
+
+func collectionForType(ct CollectionType) (*mgo.Collection, error) {
+	var c *mgo.Collection
+	switch ct {
+	case SenateCollection:
+		c = db.SenatorCollection
+	case HouseCollection:
+		c = db.HouseCollection
+	case LegislativeCollection:
+		c = db.LegislativeCollection
+	default:
+		return nil, errors.New("Collection Type Unknown")
+	}
+
+	return c, nil
 }
 
 func Find(a interface{}, col CollectionType) (*mgo.Query, error) {
