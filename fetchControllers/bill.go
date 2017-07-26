@@ -9,7 +9,21 @@ import (
 
 type initialBillFetchResult struct {
 	Results []struct {
-		Bills *[]models.Bill `json:"bills"`
+		Bills []struct {
+			BillUri string `json:"bill_uri"`
+		} `json:"bills"`
+	} `json:"results"`
+}
+
+type billFetchResult struct {
+	Bills []models.Bill `json:"results"`
+}
+
+type voteFetchResult struct {
+	Results struct {
+		Votes struct {
+			Vote models.Vote `json:"vote"`
+		} `json:"votes"`
 	} `json:"results"`
 }
 
@@ -21,19 +35,61 @@ func (bfc *BillFetchController) FetchBills(congress int, ch fetchers.Chamber, bt
 	var ifr initialBillFetchResult
 	err := fetchers.PropublicaBillFetch(congress, ch, bt, &ifr)
 	if err != nil {
-		logger.Log("Failed to to fetch all senate members with error:", err)
+		logger.Log("Failed to to fetch all", ch, "bills with error:", err)
 		return err
 	}
 
 	bills := make([]models.Bill, 0)
 	for _, r := range ifr.Results {
-		for _, bill := range *r.Bills {
-			bills = append(bills, bill)
+		for _, m := range r.Bills {
+			bill, err := bfc.FetchBillDetails(m.BillUri)
+			if err != nil {
+				logger.Log("Failed to fetch bill details", err)
+				return err
+			}
+
+			logger.Log("Fetched:", bill.Bills[0].Title, "from", ch, "for congress:", congress)
+			if len(bill.Bills[0].VotesUrl) > 0 {
+				for _, b := range bill.Bills[0].VotesUrl {
+					vote, err := bfc.FetchVoteDetails(b.APIURL)
+					if err != nil {
+						logger.Log("Failed to fetch vote details", err)
+						return err
+					}
+					logger.Log("Fetched", vote.Chamber, "vote details for the bill", vote.Bill.Title)
+					bill.Bills[0].Votes = append(bill.Bills[0].Votes, *vote)
+				}
+				bills = append(bills, bill.Bills[0])
+			} else {
+				logger.Log("No vote details available for bill", bill.Bills[0].Title)
+				bills = append(bills, bill.Bills[0])
+			}
 		}
 	}
-
 	bfc.Bills = &bills
 	return nil
+}
+
+func (bfc *BillFetchController) FetchBillDetails(billUrl string) (*billFetchResult, error) {
+	br := billFetchResult{}
+	err := fetchers.PropublicaMemberOrVoteFetch(billUrl, &br)
+	if err != nil {
+		logger.Log("Error: Failed to fetch bill details with error:", err)
+		return nil, err
+	}
+
+	return &br, nil
+}
+
+func (bfc *BillFetchController) FetchVoteDetails(voteUrl string) (*models.Vote, error) {
+	vr := voteFetchResult{}
+	err := fetchers.PropublicaMemberOrVoteFetch(voteUrl, &vr)
+	if err != nil {
+		logger.Log("Error: Failed to fetch votes with error:", err)
+		return nil, err
+	}
+
+	return &(vr.Results.Votes.Vote), nil
 }
 
 func (bfc *BillFetchController) SaveBill(bill *models.Bill) error {

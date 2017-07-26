@@ -16,3 +16,7 @@ func PropublicaBillFetch(congress int, ch Chamber, bt BillType, response interfa
 
 	return Fetch(url, response)
 }
+
+func PropublicaMemberOrVoteFetch(url string, response interface{}) error {
+	return Fetch(url, response)
+}
