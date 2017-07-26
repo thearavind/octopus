@@ -93,7 +93,8 @@ func (bfc *BillFetchController) FetchVoteDetails(voteUrl string) (*models.Vote, 
 }
 
 func (bfc *BillFetchController) SaveBill(bill *models.Bill) error {
-	return db.Insert(bill, db.LegislativeCollection)
+	q := map[string]string{"billId": bill.BillId}
+	return db.Upsert(bill, &q, db.LegislativeCollection)
 }
 
 func (bfc *BillFetchController) fetchAndSaveAllBills(

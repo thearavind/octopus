@@ -12,13 +12,13 @@ type Role struct {
 	FecCandidateId    string  `json:"fec_candidate_id" bson:"fecCandidateId"`
 	Seniority         int     `json:"seniority,string" bson:"seniority"`
 	SenateClass       int     `json:"senate_class,string" bson:"senateClass"`
-	District          int     `json:"district,string" bson:"district"`
+	District          int     `json:"district,string" bson:"district,omitempty"`
 	AtLarge           bool    `json:"at_large" bson:"atLarge"`
 	StateRank         string  `json:"state_rank" bson:"stateRank"`
 	LisId             string  `json:"lis_id" bson:"lisId"`
 	OcdId             string  `json:"ocd_id" bson:"ocdId"`
-	StartDate         string  `json:"start_date" bson:"start_date"`
-	EndDate           string  `json:"end_date" bson:"end_date"`
+	StartDate         string  `json:"start_date" bson:"startDate"`
+	EndDate           string  `json:"end_date" bson:"endDate"`
 	Office            string  `json:"office" bson:"office"`
 	Phone             string  `json:"phone" bson:"phone"`
 	Fax               string  `json:"fax" bson:"fax"`
