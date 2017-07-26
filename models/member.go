@@ -23,14 +23,14 @@ type Member struct {
 	GoogleEntityId  string  `json:"google_entity_id" bson:"googlEntityId"`
 	RssUrl          string  `json:"rss_url" bson:"rssUrl"`
 	Domain          string  `json:"domain" bson:"domain"`
-	InOffice        bool    `json:"in_office" bson:"inOffice"`
+	InOffice        bool    `json:"in_office,string" bson:"inOffice"`
 	CurrentParty    string  `json:"current_party" bson:"currentParty"`
 	MostRecentVote  string  `json:"most_recent_vote" bson:"mostRecentVote"`
 	Roles           *[]Role `json:"roles" bson:"roles"`
 }
 
-func (m *Member) FullName() string {
-	return m.FirstName + " " + m.LastName
+func (mem *Member) FullName() string {
+	return mem.FirstName + " " + mem.LastName
 }
 
 func (mem *Member) Equals(m *Member) bool {

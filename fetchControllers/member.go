@@ -56,7 +56,8 @@ func (mfc *MemberFetchController) FetchMember(url string) (*[]models.Member, err
 }
 
 func (mfc *MemberFetchController) SaveMember(mem *models.Member, ct db.CollectionType) error {
-	err := db.Insert(mem, ct)
+	q := map[string]string{"memberId": mem.MemberId}
+	err := db.Upsert(mem, &q, ct)
 	if err != nil {
 		logger.Error("Failed to save member:", mem.FullName())
 		return err

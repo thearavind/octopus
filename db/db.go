@@ -59,25 +59,48 @@ func collectionForType(ct CollectionType) (*mgo.Collection, error) {
 	return c, nil
 }
 
-func Find(a interface{}, col CollectionType) (*mgo.Query, error) {
+func Find(m interface{}, col CollectionType) (*mgo.Query, error) {
 	initialize()
 	c, err := collectionForType(col)
 	if err != nil {
-		logger.Error("Failed to find query", a, "in collection:", col)
+		logger.Error("Failed to find query", m, "in collection:", col)
 		return nil, err
 	}
 
-	q := c.Find(a)
+	q := c.Find(m)
 	return q, nil
 }
 
-func Insert(a interface{}, col CollectionType) error {
+func Insert(m interface{}, col CollectionType) error {
 	initialize()
 	c, err := collectionForType(col)
 	if err != nil {
-		logger.Error("Failed to insert", a, "into collection:", col)
+		logger.Error("Failed to insert", m, "into collection:", col)
 		return err
 	}
 
-	return c.Insert(a)
+	return c.Insert(m)
+}
+
+func Update(m interface{}, oId string, col CollectionType) error {
+	initialize()
+	c, err := collectionForType(col)
+	if err != nil {
+		logger.Error("Failed to update", m, "into collection:", col)
+		return err
+	}
+
+	return c.UpdateId(oId, m)
+}
+
+func Upsert(m interface{}, q interface{}, col CollectionType) error {
+	initialize()
+	c, err := collectionForType(col)
+	if err != nil {
+		logger.Error("Failed to upsert model into collection:", col)
+		return err
+	}
+
+	_, err = c.Upsert(q, m)
+	return err
 }
