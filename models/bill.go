@@ -1,5 +1,7 @@
 package models
 
+import "reflect"
+
 type Bill struct {
 	BillId                string    `json:"bill_id" bson:"billId"`
 	BillType              string    `json:"bill_type" bson:"billType"`
@@ -31,4 +33,8 @@ type Bill struct {
 	VotesUrl              []struct {
 		APIURL string `json:"api_url"`
 	} `json:"votes" bson:"-"`
+}
+
+func (bill *Bill) Equals(b *Bill) bool {
+	return reflect.DeepEqual(bill, b)
 }

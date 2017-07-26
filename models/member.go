@@ -1,5 +1,7 @@
 package models
 
+import "reflect"
+
 type Member struct {
 	MemberId        string  `json:"member_id" bson:"memberId"`
 	FirstName       string  `json:"first_name" bson:"firstName"`
@@ -29,4 +31,8 @@ type Member struct {
 
 func (m *Member) FullName() string {
 	return m.FirstName + " " + m.LastName
+}
+
+func (mem *Member) Equals(m *Member) bool {
+	return reflect.DeepEqual(mem, m)
 }
