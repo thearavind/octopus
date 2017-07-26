@@ -1,5 +1,7 @@
 package models
 
+import "reflect"
+
 type Role struct {
 	Congress          int     `json:"congress,string" bson:"congress"`
 	Chamber           string  `json:"chamber" bson:"chamber"`
@@ -26,4 +28,8 @@ type Role struct {
 	MissedVotesPct    float64 `json:"missed_votes_pct" bson:"missedVotesPct"`
 	VotesWithPartyPct float64 `json:"votes_with_party_pct" bson:"votesWithPartyPct"`
 	Committees        *[]Committee
+}
+
+func (role *Role) Equals(r *Role) bool {
+	return reflect.DeepEqual(role, r)
 }

@@ -1,5 +1,8 @@
 package models
 
+import "reflect"
+
+
 type Vote struct {
 	Bill struct {
 		APIURI       string `json:"api_uri" bson:"apiUri"`
@@ -49,4 +52,8 @@ type Vote struct {
 		Yes       int64  `json:"yes" bson:"yes"`
 	} `json:"total" bson:"total"`
 	VoteType string `json:"vote_type" bson:"voteType"`
+}
+
+func (vote *Vote) Equals(v *Vote) bool {
+	return reflect.DeepEqual(vote, v)
 }
