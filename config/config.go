@@ -18,6 +18,10 @@ var requiredParams = []string{
 	"OCTOPUS_LOG_LEVEL",
 	"KAPITOL_PRO_PUBLICA_CONGRESS_API_KEY",
 	"KAPITOL_PRO_PUBLICA_API_URL",
+	"KAPITOL_TWITTER_ACCESS_TOKEN_API_URL",
+	"KAPITOL_TWITTER_SEARCH_API_URL",
+	"KAPITOL_TWITTER_CONSUMER_KEY",
+	"KAPITOL_TWITTER_CONSUMER_SECRET",
 }
 
 //Mongo - Config strings related to the mongo db
@@ -42,15 +46,24 @@ type ApiKeys struct {
 }
 
 type ApiUrls struct {
-	Propublica string
+	Propublica         string
+	TwitterAccessToken string
+	TwitterSearch      string
 }
 
 //Config - Octopus config
 type Config struct {
-	Mongo   Mongo
-	LogInfo LogInfo
-	ApiKeys ApiKeys
-	ApiUrls ApiUrls
+	Mongo       Mongo
+	LogInfo     LogInfo
+	ApiKeys     ApiKeys
+	ApiUrls     ApiUrls
+	TwitterKeys TwitterKeys
+}
+
+//Config - twitter config
+type TwitterKeys struct {
+	ConsumerKey    string
+	ConsumerSecret string
 }
 
 //C - Global config variable
@@ -86,6 +99,14 @@ func init() {
 		},
 		LogInfo: LogInfo{Path: os.Getenv("OCTOPUS_LOG_PATH"), Level: level},
 		ApiKeys: ApiKeys{ProPublicaCongress: os.Getenv("KAPITOL_PRO_PUBLICA_CONGRESS_API_KEY")},
-		ApiUrls: ApiUrls{Propublica: os.Getenv("KAPITOL_PRO_PUBLICA_API_URL")},
+		ApiUrls: ApiUrls{
+			Propublica:         os.Getenv("KAPITOL_PRO_PUBLICA_API_URL"),
+			TwitterAccessToken: os.Getenv("KAPITOL_TWITTER_ACCESS_TOKEN_API_URL"),
+			TwitterSearch:      os.Getenv("KAPITOL_TWITTER_SEARCH_API_URL"),
+		},
+		TwitterKeys: TwitterKeys{
+			ConsumerKey:    os.Getenv("KAPITOL_TWITTER_CONSUMER_KEY"),
+			ConsumerSecret: os.Getenv("KAPITOL_TWITTER_CONSUMER_SECRET"),
+		},
 	}
 }

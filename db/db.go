@@ -5,6 +5,7 @@ import (
 	"github.com/kapitol-app/octopus/config"
 	"github.com/kapitol-app/octopus/logger"
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type database struct {
@@ -82,7 +83,7 @@ func Insert(m interface{}, col CollectionType) error {
 	return c.Insert(m)
 }
 
-func Update(m interface{}, oId string, col CollectionType) error {
+func Update(m interface{}, oId bson.ObjectId, col CollectionType) error {
 	initialize()
 	c, err := collectionForType(col)
 	if err != nil {

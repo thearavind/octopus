@@ -21,4 +21,6 @@ func main() {
 	} else {
 		logger.Error("Failed to fetch and save all recent senate bills")
 	}
+	tfc := fetchControllers.TweetsFetchController{}
+	tfc.FetchSenatorsAndHouseTweet()
 }
